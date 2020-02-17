@@ -1,5 +1,9 @@
+const User = require('../models/user')
+
 const getById = (id) => {
-    return "user test:" + id;
+    return User.findByPk(id).then(
+        (user) => user.username
+    );
 };
 
 module.exports = {
