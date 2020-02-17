@@ -1,13 +1,31 @@
-const { user } = require('../db');
+const { User } = require('../db');
+const { logger } = require('../utils');
  
-const getUserById = async (id) => {
+const authenticateUser = async (username, password) => {
   try {
-    return await user.getById(id);
+    const user = await User.getByUsername(username);
+    const validUser = await user.validatePassword(password)
+    return validUser;
   } catch(e) {
-    throw new Error(e.message);
+    logger.error(e.message);
   }
 };
 
+const createUser = async (user) => {
+  try{
+    const newUserId = await User.create(user);
+    if(newUserId){
+      return newUserId
+    }else{
+      return 0;
+    }
+  }catch(e){
+    logger.error(e.message);
+    throw e;
+  }
+}
+
 module.exports = {
-  getUserById
+  authenticateUser,
+  createUser
 };

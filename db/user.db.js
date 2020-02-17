@@ -1,11 +1,47 @@
-const User = require('../models/user')
+const { sequelize, DataTypes } = require('../utils/sequelize')
+const bcrypt = require('bcryptjs');
 
-const getById = (id) => {
-    return User.findByPk(id).then(
-        (user) => user.username
-    );
-};
+const User = sequelize.define('user', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, {
+    timestamps: false
+});
+
+User.beforeCreate(async (user, options) => {
+    const salt = bcrypt.genSaltSync(10);
+    user.password = bcrypt.hashSync(user.password, salt);
+});
+
+User.prototype.validatePassword = function(inputPassword) {
+    return bcrypt.compare(inputPassword, this.password)
+}
+
+const getByUsername = (username) => {
+    return User.findOne({
+        where: {
+            username: username
+        }
+    });
+}
+
+const create = async (user) => {
+    const newUser = await User.create(user);
+    return newUser.id
+}
 
 module.exports = {
-    getById
+    getByUsername,
+    create,
 };

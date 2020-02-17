@@ -1,22 +1,12 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 const routes = require('./routes');
 const port = 3000;
 var { logger } = require('./utils');  
 
-
-app.use(function(err, req, res, next) {
-  const error = {};
-  if (app.get('env') !== 'production') {
-    error = err
-  }
-
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: error
-  });
-});
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api', routes);
 

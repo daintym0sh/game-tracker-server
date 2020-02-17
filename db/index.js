@@ -1,6 +1,6 @@
-const user = require('./user.db');
+const User = require('./user.db');
 
 module.exports =
 {
-    user
+    User
 };
