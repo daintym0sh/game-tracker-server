@@ -3,10 +3,14 @@ const { logger } = require('../utils');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const localStrategy = require('passport-local').Strategy;
+const JWTstrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
+const tokenSecret = 'top_secret';
 
 const login = async (req, res, next) => {
   passport.authenticate('login', async (err, user, info) => {     
       try {
+
           if(!user){
             const message = 'User not found';
               logger.error(message);
@@ -17,15 +21,16 @@ const login = async (req, res, next) => {
             user, 
             { session : false }, 
             async (error) => {
-              if( error ){
+              if(error){
                 return next(error)
               }
 
-              const body = { _id : user.id, username : user.username };
-              const token = jwt.sign({ user : body },'top_secret');
+              const body = { id : user.id, username : user.username, test: "test" };
+              const token = jwt.sign({ user : body }, tokenSecret);
 
               return res.json({ token });
-          });     
+            }
+          );     
       } catch (error) {
           logger.error(e.message);
           return next(error);
@@ -39,12 +44,14 @@ passport.use('login', new localStrategy({
 }, async (username, password, done) => {
   try {
     const user = await userService.getUser(username);
-    if( !user ){
+
+    if(!user){
       return done(null, false, { message : 'User not found'});
     }
 
-    const validate = await user.validatePassword(password);
-    if( !validate ){
+    const valid = await user.validatePassword(password);
+
+    if(!valid){
       return done(null, false, { message : 'Wrong Password'});
     }
     
@@ -54,27 +61,45 @@ passport.use('login', new localStrategy({
   }
 }));
 
+passport.use(new JWTstrategy({
+  secretOrKey : tokenSecret,
+  jwtFromRequest : ExtractJWT.fromAuthHeaderAsBearerToken()
+}, async (token, done) => {
+  try {
+    return done(null, token.user);
+  } catch (error) {
+    done(error);
+  }
+}));
+
 const signup = async (req, res, next) => {
   const user = req.body
   try{
-    const userId = await userService.createUser(user)
+    const userId =
+      await userService.createUser(user)
 
-    if(userId > 0){
-      res.send(
-        {
-          id: userId,
-          message: `new user created with ${userId}`
-        }
-      );
-    }
+    res.send(
+      {
+        id: userId,
+        message: `new user created with ${userId}`
+      }
+    );
     
   } catch(e) {
     logger.error(e.message);
     res.status(500).end(e.message);
   }
 }
+
+const test = async (req, res, next) => {
+  res.json({
+    message : 'You made it to the secure route',
+    user : req.user
+  })
+}
  
 module.exports = {
     login,
-    signup
+    signup,
+    test
 };
