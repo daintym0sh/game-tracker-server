@@ -1,11 +1,9 @@
 const { User } = require('../db');
 const { logger } = require('../utils');
  
-const authenticateUser = async (username, password) => {
+const getUser = async (username) => {
   try {
-    const user = await User.getByUsername(username);
-    const validUser = await user.validatePassword(password)
-    return validUser;
+    return await User.getByUsername(username);
   } catch(e) {
     logger.error(e.message);
   }
@@ -26,6 +24,6 @@ const createUser = async (user) => {
 }
 
 module.exports = {
-  authenticateUser,
+  getUser,
   createUser
 };
