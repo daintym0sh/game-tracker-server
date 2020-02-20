@@ -14,7 +14,7 @@ const login = async (req, res, next) => {
           if(!user){
             const message = 'User not found';
               logger.error(message);
-              return res.json(message);
+              return res.status(500).json(message);
           }
 
           req.login(
