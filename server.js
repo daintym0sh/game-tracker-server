@@ -8,7 +8,7 @@ var { logger } = require('./utils');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/', routes);
+app.use('/api', routes);
 app.use('/api', passport.authenticate('jwt', { session : false }), secureRoutes);
 
 app.use(function(err, req, res, next) {
