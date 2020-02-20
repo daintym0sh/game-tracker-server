@@ -17,6 +17,7 @@ app.use(function(err, req, res, next) {
 });
 
 const port = process.env.PORT | 3000;
+logger.info(`Port: ${port}`);
 app.listen(
   port, 
   () => 
