@@ -11,9 +11,9 @@ const getUser = async (username) => {
 
 const createUser = async (user) => {
   try{
-    const newUserId = await User.create(user);
-    if(newUserId){
-      return newUserId
+    const newUser = await User.create(user);
+    if(newUser){
+      return newUser
     }else{
       return 0;
     }

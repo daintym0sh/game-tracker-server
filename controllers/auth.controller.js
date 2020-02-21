@@ -12,9 +12,8 @@ const login = async (req, res, next) => {
       try {
 
           if(!user){
-            const message = 'User not found';
-              logger.error(message);
-              return res.status(500).json(message);
+              logger.error(info.message);
+              return res.status(500).json(info.message);
           }
 
           req.login(
@@ -75,19 +74,18 @@ passport.use(new JWTstrategy({
 const signup = async (req, res, next) => {
   const user = req.body
   try{
-    const userId =
+    const newUser =
       await userService.createUser(user)
 
-    res.send(
-      {
-        id: userId,
-        message: `new user created with ${userId}`
-      }
-    );
+    res.status(200)
+      .json(
+        `New user ${newUser.username} created with id ${newUser.id}`
+      );
     
   } catch(e) {
-    logger.error(e.message);
-    res.status(500).end(e.message);
+    const errorMessage = 'User already exists'
+    logger.error(e.message + ': ' + errorMessage);
+    res.status(500).end(errorMessage);
   }
 }
 

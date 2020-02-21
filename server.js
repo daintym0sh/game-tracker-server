@@ -16,6 +16,14 @@ app.use(function(err, req, res, next) {
   res.json({ error : err });
 });
 
+if(process.env.NODE_ENV === 'production'){
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", process.env.CLIENT);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+}
+
 const port = process.env.PORT || 3000;
 logger.info(`Port: ${port}`);
 app.listen(

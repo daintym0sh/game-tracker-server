@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const logger = require('./logger');
 
 const address = process.env.MYSQL_ADDRESS;
-const database = process.env.MYSQL_NAME;
+const database = process.env.MYSQL_NAME || 'game_tracker';
 const user = process.env.MYSQL_USER
 const password = process.env.MYSQL_PWD;
 const dialect = 'mysql';
