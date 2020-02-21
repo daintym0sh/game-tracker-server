@@ -8,14 +8,6 @@ var { logger } = require('./utils');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/api', routes);
-app.use('/api', passport.authenticate('jwt', { session : false }), secureRoutes);
-
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.json({ error : err });
-});
-
 if(process.env.NODE_ENV === 'production'){
   console.log('client url: ' + process.env.CLIENT)
   app.use(function(req, res, next) {
@@ -24,6 +16,15 @@ if(process.env.NODE_ENV === 'production'){
     next();
   });
 }
+
+app.use('/api', routes);
+app.use('/api', passport.authenticate('jwt', { session : false }), secureRoutes);
+
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.json({ error : err });
+});
+
 
 const port = process.env.PORT || 3000;
 logger.info(`Port: ${port}`);
